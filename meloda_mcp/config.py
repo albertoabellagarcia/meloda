@@ -30,6 +30,11 @@ class Config:
     log_file: str | None = DEFAULT_LOG_FILE
     request_timeout_s: float = 30.0
     user_agent: str = "meloda-mcp/0.1.0"
+    # Hosts/Origins allowed by the MCP transport DNS-rebinding protection.
+    # Defaults to localhost only; override in deployment to add the public
+    # domain (e.g. ``["spain.meloda.org"]``).
+    allowed_hosts: tuple[str, ...] = field(default_factory=tuple)
+    allowed_origins: tuple[str, ...] = field(default_factory=tuple)
     extras: dict = field(default_factory=dict)
 
 
@@ -51,6 +56,11 @@ def load_config(path: str | os.PathLike[str] | None = None) -> Config:
             with candidate.open("r", encoding="utf-8") as fh:
                 raw = yaml.safe_load(fh) or {}
             mcp_block = (raw.get("mcp") or {}) if isinstance(raw, dict) else {}
+            consumed = {
+                "api_base", "port", "rate_limit_per_minute",
+                "rate_limit_burst", "log_file", "request_timeout_s", "user_agent",
+                "allowed_hosts", "allowed_origins",
+            }
             return Config(
                 api_base=mcp_block.get("api_base", DEFAULT_API_BASE),
                 http_port=int(mcp_block.get("port", DEFAULT_HTTP_PORT)),
@@ -63,9 +73,8 @@ def load_config(path: str | os.PathLike[str] | None = None) -> Config:
                 log_file=mcp_block.get("log_file", DEFAULT_LOG_FILE),
                 request_timeout_s=float(mcp_block.get("request_timeout_s", 30.0)),
                 user_agent=mcp_block.get("user_agent", "meloda-mcp/0.1.0"),
-                extras={k: v for k, v in mcp_block.items() if k not in {
-                    "api_base", "port", "rate_limit_per_minute",
-                    "rate_limit_burst", "log_file", "request_timeout_s", "user_agent",
-                }},
+                allowed_hosts=tuple(mcp_block.get("allowed_hosts") or ()),
+                allowed_origins=tuple(mcp_block.get("allowed_origins") or ()),
+                extras={k: v for k, v in mcp_block.items() if k not in consumed},
             )
     return Config()

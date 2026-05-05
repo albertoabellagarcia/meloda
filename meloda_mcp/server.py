@@ -8,6 +8,7 @@ from __future__ import annotations
 import contextlib
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 from . import __version__
 from .api_client import ApiClient
@@ -20,17 +21,38 @@ from .tools import stats as stats_tools
 def build_server(
     config: Config | None = None,
     client: ApiClient | None = None,
+    streamable_http_path: str = "/mcp",
+    allowed_hosts: list[str] | None = None,
+    allowed_origins: list[str] | None = None,
 ) -> FastMCP:
     """Construct (but don't run) an MCP server.
 
     If ``client`` is provided the caller is responsible for closing it.
     Otherwise an internal client is created and registered for cleanup at
     server shutdown via the FastMCP lifespan.
+
+    ``streamable_http_path`` controls where the MCP endpoint sits inside the
+    Starlette app returned by :meth:`FastMCP.streamable_http_app`. Defaults to
+    ``/mcp``. When the parent FastAPI app mounts this sub-app under its own
+    ``/mcp`` prefix, set this to ``/`` to avoid a duplicated ``/mcp/mcp`` path.
     """
     cfg = config or Config()
     api = client or ApiClient(cfg)
 
-    server = FastMCP(name="meloda")
+    transport_security = TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=allowed_hosts or [
+            "127.0.0.1:*", "localhost:*", "[::1]:*",
+        ],
+        allowed_origins=allowed_origins or [
+            "http://127.0.0.1:*", "http://localhost:*", "http://[::1]:*",
+        ],
+    )
+    server = FastMCP(
+        name="meloda",
+        streamable_http_path=streamable_http_path,
+        transport_security=transport_security,
+    )
 
     @server.tool()
     def ping() -> dict[str, str]:

@@ -4,7 +4,7 @@ MCP server for the **Spanish Open Data Reuse Monitor** ([spain.meloda.org](https
 
 Exposes the catalog of ~700 000 datasets across 43 monitored Spanish open-data portals to any [Model Context Protocol](https://modelcontextprotocol.io) client (Claude Desktop, Claude.ai, Cursor, VSCode, etc.).
 
-> Status: **0.2.0 — stdio MVP.** Seven tools wired to the public REST API. HTTP transport lands in 0.4.0.
+> Status: **0.3.0 — Streamable HTTP transport.** Seven tools available via the public hosted endpoint at `https://spain.meloda.org/mcp` and as a stdio package.
 
 ## What it gives you
 
@@ -83,9 +83,9 @@ The wrapper code in this repository is licensed under **Apache License 2.0** —
 ## Roadmap
 
 - **0.1.0** — repo scaffold ✅
-- **0.2.0** — stdio MVP with the 7 tools above ✅ *(this release)*
-- **0.3.0** — MCP resources
-- **0.4.0** — Streamable HTTP transport, deployable to `/mcp`
+- **0.2.0** — stdio MVP with the 7 tools above ✅
+- **0.3.0** — Streamable HTTP transport at `/mcp`, per-IP rate limiting ✅ *(this release)*
+- **0.4.0** — MCP resources
 - **0.5.0** — PyPI publication, registry listings (Smithery, Claude Connectors)
 - **1.0.0** — stable contract, semantic versioning guarantees
 
