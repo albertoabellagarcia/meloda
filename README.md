@@ -4,7 +4,7 @@ MCP server for the **Spanish Open Data Reuse Monitor** ([spain.meloda.org](https
 
 Exposes the catalog of ~700 000 datasets across 43 monitored Spanish open-data portals to any [Model Context Protocol](https://modelcontextprotocol.io) client (Claude Desktop, Claude.ai, Cursor, VSCode, etc.).
 
-> Status: **0.3.0 — Streamable HTTP transport.** Seven tools available via the public hosted endpoint at `https://spain.meloda.org/mcp` and as a stdio package.
+> Status: **0.4.0 — MCP resources.** Seven tools and five resources (two static + three templated) available via the public hosted endpoint at `https://spain.meloda.org/mcp` and as a stdio package.
 
 ## What it gives you
 
@@ -64,15 +64,15 @@ meloda-mcp   # runs the stdio server
 | `get_global_stats` | catalog-wide KPIs and MELODA distribution |
 | `ping` | health check; returns wrapper version and configured API base |
 
-## Resources (planned for 0.3.0)
+## Resources (available since 0.4.0)
 
 | URI | content |
 |---|---|
 | `observatory://portals` | list of all monitored portals |
-| `observatory://portal/{id}` | one portal |
-| `observatory://dataset/{id}` | one dataset |
-| `observatory://dataset/{id}/resources` | resources of a dataset |
-| `observatory://catalog/dcat-ap` | full DCAT-AP 2.1 catalog dump |
+| `observatory://portal/{portal_id}` | one portal |
+| `observatory://dataset/{dataset_id}` | one dataset |
+| `observatory://dataset/{dataset_id}/resources` | distributions of a dataset |
+| `observatory://catalog/dcat-ap` | full DCAT-AP 2.1 catalog dump (large) |
 
 ## Data licensing
 
@@ -84,8 +84,8 @@ The wrapper code in this repository is licensed under **Apache License 2.0** —
 
 - **0.1.0** — repo scaffold ✅
 - **0.2.0** — stdio MVP with the 7 tools above ✅
-- **0.3.0** — Streamable HTTP transport at `/mcp`, per-IP rate limiting ✅ *(this release)*
-- **0.4.0** — MCP resources
+- **0.3.0** — Streamable HTTP transport at `/mcp`, per-IP rate limiting ✅
+- **0.4.0** — MCP resources (5 URIs, two static + three templated) ✅ *(this release)*
 - **0.5.0** — PyPI publication, registry listings (Smithery, Claude Connectors)
 - **1.0.0** — stable contract, semantic versioning guarantees
 

@@ -7,7 +7,7 @@ from meloda_mcp.server import build_server
 
 
 def test_version_exposed() -> None:
-    assert meloda_mcp.__version__ == "0.3.0"
+    assert meloda_mcp.__version__ == "0.4.0"
 
 
 def test_default_config_uses_public_api() -> None:

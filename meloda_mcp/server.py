@@ -11,6 +11,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
 from . import __version__
+from . import resources as resources_module
 from .api_client import ApiClient
 from .config import Config
 from .tools import datasets as datasets_tools
@@ -62,6 +63,7 @@ def build_server(
     datasets_tools.register(server, api)
     portals_tools.register(server, api)
     stats_tools.register(server, api)
+    resources_module.register(server, api)
 
     if client is None:
         @contextlib.asynccontextmanager
