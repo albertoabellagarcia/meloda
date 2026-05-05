@@ -68,3 +68,26 @@ def test_rate_limit_returns_429_after_threshold() -> None:
     assert blocked.status_code == 429
     err = blocked.json()
     assert err["error"]["code"] == 429
+
+
+def test_browser_get_on_mcp_redirects_to_docs() -> None:
+    """A GET on /mcp from a browser should be 302'd to the human docs page."""
+    with _build_test_app() as client:
+        response = client.get(
+            "/mcp",
+            headers={"Accept": "text/html,application/xhtml+xml"},
+            follow_redirects=False,
+        )
+    assert response.status_code == 302
+    assert response.headers["location"].endswith("mcp.php")
+
+
+def test_mcp_client_request_is_not_redirected() -> None:
+    """A POST or an Accept: text/event-stream GET must hit the MCP transport."""
+    with _build_test_app() as client:
+        response = client.get(
+            "/mcp",
+            headers={"Accept": "application/json, text/event-stream"},
+            follow_redirects=False,
+        )
+    assert response.status_code != 302

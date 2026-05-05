@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import logging
 import logging.handlers
+import os
 import sys
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -29,8 +30,9 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse, Response
 
 from . import __version__
 from .api_client import ApiClient
@@ -38,6 +40,11 @@ from .config import Config, load_config
 from .server import build_server
 
 LOGGER = logging.getLogger("meloda_mcp.http")
+
+# Where to redirect human visitors who land on the MCP endpoint with a browser.
+# Configurable via the ``MELODA_MCP_DOCS_URL`` env var; defaults to the
+# spain.meloda.org docs page that ships in this repo.
+_DOCS_URL = os.environ.get("MELODA_MCP_DOCS_URL", "https://spain.meloda.org/mcp.php")
 
 
 def _setup_logging(cfg: Config) -> None:
@@ -51,6 +58,31 @@ def _setup_logging(cfg: Config) -> None:
         handlers=handlers,
         force=True,
     )
+
+
+class BrowserRedirectMiddleware(BaseHTTPMiddleware):
+    """Redirect human GETs to the human-friendly docs page.
+
+    A browser request hitting ``/mcp`` or ``/mcp/`` lands here with
+    ``Accept`` containing ``text/html`` and a method of GET. MCP clients
+    use POST/DELETE or set ``Accept: text/event-stream`` for streams,
+    so we can safely route only the browser case to the docs URL.
+    """
+
+    def __init__(self, app, docs_url: str) -> None:
+        super().__init__(app)
+        self._docs_url = docs_url
+
+    async def dispatch(self, request: Request, call_next):
+        if (
+            request.method == "GET"
+            and request.url.path in ("/mcp", "/mcp/")
+            and "text/html" in request.headers.get("accept", "")
+            and "text/event-stream" not in request.headers.get("accept", "")
+        ):
+            return RedirectResponse(self._docs_url, status_code=302)
+        response: Response = await call_next(request)
+        return response
 
 
 def _rate_limit_handler(_request: Request, exc: RateLimitExceeded) -> JSONResponse:
@@ -115,6 +147,7 @@ def build_app(config: Config | None = None) -> FastAPI:
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
     app.add_middleware(SlowAPIMiddleware)
+    app.add_middleware(BrowserRedirectMiddleware, docs_url=_DOCS_URL)
 
     @app.get("/")
     async def root() -> dict[str, str]:
