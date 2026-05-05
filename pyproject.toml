@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "meloda-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP server for the Spanish Open Data Reuse Monitor (spain.meloda.org). Exposes ~700k datasets across 43 portals via Model Context Protocol."
 readme = "README.md"
 license = "Apache-2.0"

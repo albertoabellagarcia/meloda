@@ -21,6 +21,21 @@ class ApiError(RuntimeError):
         self.status_code = status_code
 
 
+def _extract_error_message(response: httpx.Response) -> str:
+    """Pull the human-readable error message out of the API's error envelope."""
+    try:
+        body = response.json()
+    except Exception:
+        return response.text[:200] or response.reason_phrase
+    if isinstance(body, dict):
+        err = body.get("error")
+        if isinstance(err, dict) and "message" in err:
+            return str(err["message"])
+        if isinstance(err, str):
+            return err
+    return response.text[:200] or response.reason_phrase
+
+
 class ApiClient:
     """Async client for the Meloda REST API."""
 
@@ -44,7 +59,11 @@ class ApiClient:
         await self.aclose()
 
     async def get(self, path: str, params: dict[str, Any] | None = None) -> Any:
-        """GET ``path`` (relative to api_base) and return parsed JSON."""
+        """GET ``path`` (relative to api_base) and return parsed JSON.
+
+        Raises ``ApiError`` on transport failures, non-2xx responses, or
+        non-JSON payloads.
+        """
         clean = {k: v for k, v in (params or {}).items() if v is not None}
         try:
             response = await self._client.get(path, params=clean)
@@ -52,7 +71,7 @@ class ApiClient:
             raise ApiError(f"upstream API unreachable: {exc}") from exc
         if response.status_code >= 400:
             raise ApiError(
-                f"upstream API returned {response.status_code} for {path}",
+                _extract_error_message(response),
                 status_code=response.status_code,
             )
         ctype = response.headers.get("content-type", "")

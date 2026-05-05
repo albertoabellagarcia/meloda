@@ -4,7 +4,7 @@ MCP server for the **Spanish Open Data Reuse Monitor** ([spain.meloda.org](https
 
 Exposes the catalog of ~700 000 datasets across 43 monitored Spanish open-data portals to any [Model Context Protocol](https://modelcontextprotocol.io) client (Claude Desktop, Claude.ai, Cursor, VSCode, etc.).
 
-> Status: **0.1.0 — early scaffold.** Tools and HTTP transport land in 0.2.0.
+> Status: **0.2.0 — stdio MVP.** Seven tools wired to the public REST API. HTTP transport lands in 0.4.0.
 
 ## What it gives you
 
@@ -51,17 +51,18 @@ pip install meloda-mcp
 meloda-mcp   # runs the stdio server
 ```
 
-## Tools (planned for 0.2.0)
+## Tools (available since 0.2.0)
 
 | tool | purpose |
 |---|---|
 | `search_datasets` | full-text search with filters by portal / format / license / region / MELODA score |
 | `get_dataset` | full metadata of a single dataset |
 | `get_dataset_resources` | downloadable distributions of a dataset |
-| `list_portals` | list portals with last-harvest stats |
+| `list_portals` | list portals with last-harvest stats; client-side filter by region / technology |
 | `get_portal` | portal details + MELODA breakdown |
 | `list_portal_datasets` | datasets within a single portal |
 | `get_global_stats` | catalog-wide KPIs and MELODA distribution |
+| `ping` | health check; returns wrapper version and configured API base |
 
 ## Resources (planned for 0.3.0)
 
@@ -81,8 +82,8 @@ The wrapper code in this repository is licensed under **Apache License 2.0** —
 
 ## Roadmap
 
-- **0.1.0** — repo scaffold (this release)
-- **0.2.0** — stdio MVP with the 7 tools above
+- **0.1.0** — repo scaffold ✅
+- **0.2.0** — stdio MVP with the 7 tools above ✅ *(this release)*
 - **0.3.0** — MCP resources
 - **0.4.0** — Streamable HTTP transport, deployable to `/mcp`
 - **0.5.0** — PyPI publication, registry listings (Smithery, Claude Connectors)
