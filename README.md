@@ -101,3 +101,11 @@ uv run pytest
 ## Contributing
 
 Issues and PRs welcome. Please discuss larger changes in an issue first.
+
+## Releasing
+
+See [`docs/PUBLISHING.md`](docs/PUBLISHING.md) for the operator-side checklist
+(PyPI Trusted Publishing setup, tag-and-push flow, Smithery listing,
+Claude Connectors submission).
+
+The full version history lives in [`CHANGELOG.md`](CHANGELOG.md).

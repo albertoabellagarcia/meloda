@@ -1,0 +1,39 @@
+version: 1
+
+# Smithery listing manifest.
+# Smithery is an MCP registry that helps users discover and install MCP
+# servers. This file lets us declare how the server should be installed and
+# what it provides. See https://smithery.ai/docs/registry for the full schema.
+
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+    additionalProperties: false
+  commandFunction: |
+    (config) => ({
+      command: "uvx",
+      args: ["meloda-mcp"]
+    })
+
+build:
+  dockerfile: null
+
+metadata:
+  displayName: Meloda — Spanish Open Data Monitor
+  description: >-
+    Browse the catalog of ~700 000 datasets across 43 monitored Spanish
+    open-data portals. Provides search, dataset and portal lookup, MELODA
+    reusability scores and the full DCAT-AP catalog as MCP resources.
+  iconUrl: https://spain.meloda.org/favicon.ico
+  homepage: https://spain.meloda.org/mcp.php
+  repository: https://github.com/albertoabellagarcia/meloda
+  license: Apache-2.0
+  tags:
+    - open-data
+    - spain
+    - dcat
+    - meloda
+    - ckan
+    - public-sector
